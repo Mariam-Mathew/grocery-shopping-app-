@@ -332,13 +332,21 @@ export default function DashboardScreen() {
               <View
                 style={[
                   styles.categoryIcon,
-                  { backgroundColor: category.gradient[0] },
+                  {
+                    backgroundColor: category.gradient[0],
+                    shadowColor: category.gradient[0],
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 8,
+                    elevation: 6,
+                  },
                 ]}
               >
                 <Ionicons name={category.icon as any} size={28} color="#fff" />
               </View>
               <Text style={styles.categoryName}>{category.name}</Text>
               <Text style={styles.categoryItems}>{category.items} items</Text>
+              <View style={styles.categoryCardOverlay} />
             </Pressable>
           ))}
         </View>
@@ -695,46 +703,6 @@ const styles = StyleSheet.create({
   categoriesGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  categoryCard: {
-    width: "48%",
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 12,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  categoryIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  categoryName: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#1A1A1A",
-    textAlign: "center",
-    marginBottom: 4,
-  },
-  categoryItems: {
-    fontSize: 12,
-    color: "#666",
-    textAlign: "center",
-  },
-  orderCard: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#fff",
     padding: 15,
     borderRadius: 12,
     marginBottom: 10,
@@ -799,5 +767,66 @@ const styles = StyleSheet.create({
     color: "#1A1A1A",
     marginTop: 8,
     textAlign: "center",
+  },
+  categoryCard: {
+    width: "48%",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 12,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.05)",
+    position: "relative",
+    overflow: "hidden",
+  },
+  categoryCardOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "transparent",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.8)",
+    pointerEvents: "none",
+  },
+  categoryIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  categoryName: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#1A1A1A",
+    textAlign: "center",
+    marginBottom: 6,
+    lineHeight: 20,
+  },
+  categoryItems: {
+    fontSize: 13,
+    color: "#666",
+    fontWeight: "500",
+  },
+  orderCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
 });

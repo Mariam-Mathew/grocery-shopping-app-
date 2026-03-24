@@ -3,6 +3,7 @@
 This folder contains the prompts used to create the grocery shopping application. These prompts document the development process and can be used as reference for future enhancements or similar projects.
 
 ## Project Overview
+
 - **Technology Stack**: React Native with Expo
 - **TypeScript**: Yes
 - **State Management**: React Context API
@@ -12,11 +13,13 @@ This folder contains the prompts used to create the grocery shopping application
 ## Development Prompts
 
 ### 1. Initial Setup
+
 ```
 Create a new React Native Expo project with TypeScript and tab navigation
 ```
 
 ### 2. Core Structure Setup
+
 ```
 Set up the basic app structure with:
 - Tab navigation (Home, Cart, Settings)
@@ -26,6 +29,7 @@ Set up the basic app structure with:
 ```
 
 ### 3. Shopping Cart Functionality
+
 ```
 Create a shopping cart system with:
 - Add/remove items functionality
@@ -36,6 +40,7 @@ Create a shopping cart system with:
 ```
 
 ### 4. Product Management
+
 ```
 Implement product listing with:
 - Product display cards
@@ -46,6 +51,7 @@ Implement product listing with:
 ```
 
 ### 5. Settings Screen
+
 ```
 Create a settings screen with:
 - User preferences
@@ -55,6 +61,7 @@ Create a settings screen with:
 ```
 
 ### 6. UI Components
+
 ```
 Build reusable components:
 - Themed components (light/dark mode support)
@@ -65,6 +72,7 @@ Build reusable components:
 ```
 
 ### 7. TypeScript Types
+
 ```
 Define TypeScript interfaces for:
 - Product types
@@ -75,6 +83,7 @@ Define TypeScript interfaces for:
 ```
 
 ### 8. Navigation Enhancement
+
 ```
 Enhance navigation with:
 - Modal routes
@@ -84,6 +93,7 @@ Enhance navigation with:
 ```
 
 ### 9. State Management
+
 ```
 Implement React Context for:
 - Shopping cart state
@@ -93,6 +103,7 @@ Implement React Context for:
 ```
 
 ### 10. Styling and Theming
+
 ```
 Create a comprehensive theming system:
 - Light/dark theme support
@@ -105,6 +116,7 @@ Create a comprehensive theming system:
 ## Key Features Implemented
 
 ### Shopping Cart
+
 - ✅ Add items to cart
 - ✅ Remove items from cart
 - ✅ Update quantities
@@ -113,6 +125,7 @@ Create a comprehensive theming system:
 - ✅ Filter cart items
 
 ### Product Management
+
 - ✅ Product listings
 - ✅ Search functionality
 - ✅ Category filters
@@ -120,6 +133,7 @@ Create a comprehensive theming system:
 - ✅ Add to cart
 
 ### User Interface
+
 - ✅ Tab navigation
 - ✅ Settings screen
 - ✅ Dark/light theme support
@@ -127,6 +141,7 @@ Create a comprehensive theming system:
 - ✅ Loading states
 
 ### Technical Features
+
 - ✅ TypeScript integration
 - ✅ Context API for state management
 - ✅ File-based routing
@@ -136,18 +151,21 @@ Create a comprehensive theming system:
 ## Development Notes
 
 ### Architecture Decisions
+
 1. **Expo Router**: Chosen for file-based routing simplicity
 2. **Context API**: Selected over Redux for simpler state management
 3. **TypeScript**: Implemented for type safety and better developer experience
 4. **Custom Theming**: Built-in theme support for light/dark modes
 
 ### Component Structure
+
 - Components are organized by feature
 - Reusable components in the root components folder
 - Screen-specific components co-located with screens
 - Types defined in dedicated types folder
 
 ### State Management Pattern
+
 - ShoppingContext for cart operations
 - Theme context for UI theming
 - Local state for component-specific data
@@ -155,6 +173,7 @@ Create a comprehensive theming system:
 ## Future Enhancement Prompts
 
 ### Potential Features
+
 ```
 Add user authentication and profile management
 Implement barcode scanning for products
@@ -167,6 +186,7 @@ Implement analytics and usage tracking
 ```
 
 ### Technical Improvements
+
 ```
 Add comprehensive unit and integration tests
 Implement end-to-end testing
@@ -179,6 +199,7 @@ Implement advanced caching strategies
 ```
 
 ## Repository Structure
+
 ```
 grocery-shopping-app/
 ├── app/                    # Expo Router pages

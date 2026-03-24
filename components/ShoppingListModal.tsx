@@ -18,6 +18,8 @@ import {
   STORES,
   UNITS,
 } from "../types/shopping";
+import ListTemplatesModal from "./ListTemplatesModal";
+import ShareListModal from "./ShareListModal";
 import ShoppingListFilters from "./ShoppingListFilters";
 
 interface ShoppingListModalProps {
@@ -49,6 +51,8 @@ export default function ShoppingListModal({
   );
   const [showAddItem, setShowAddItem] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showTemplatesModal, setShowTemplatesModal] = useState(false);
   const [newItem, setNewItem] = useState({
     name: "",
     category: CATEGORIES[0],
@@ -167,6 +171,52 @@ export default function ShoppingListModal({
     ]);
   };
 
+  const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
+    if (!list) return;
+    if (newQuantity < 1) return;
+
+    dispatch({
+      type: "UPDATE_ITEM",
+      payload: {
+        listId: list.id,
+        itemId,
+        updates: { quantity: newQuantity },
+      },
+    });
+  };
+
+  const handleEditItem = (item: any) => {
+    if (!list) return;
+    // Set the form to edit this item
+    setNewItem({
+      name: item.name,
+      category: item.category,
+      quantity: item.quantity,
+      unit: item.unit,
+      price: item.price,
+      notes: item.notes || "",
+    });
+    setShowAddItem(true);
+  };
+
+  const handleDuplicateItem = (item: any) => {
+    if (!list) return;
+    const duplicatedItem = {
+      ...item,
+      id: Date.now().toString(),
+      name: `${item.name} (copy)`,
+      createdAt: new Date(),
+    };
+
+    dispatch({
+      type: "ADD_ITEM",
+      payload: {
+        listId: list.id,
+        item: duplicatedItem,
+      },
+    });
+  };
+
   const resetForm = () => {
     setListName("");
     setListDescription("");
@@ -283,6 +333,35 @@ export default function ShoppingListModal({
     });
   };
 
+  const handleSelectTemplate = (template: any) => {
+    if (!list) {
+      // Create new list from template
+      dispatch({
+        type: "CREATE_LIST",
+        payload: {
+          name: template.name,
+          description: template.description,
+          store: template.store,
+          items: template.items.map((item: any, index: number) => ({
+            ...item,
+            id: Date.now().toString() + index,
+            checked: false,
+            createdAt: new Date(),
+          })),
+          totalBudget: template.items.reduce(
+            (sum: number, item: any) => sum + item.price * item.quantity,
+            0,
+          ),
+          shared: false,
+          color: LIST_COLORS[0],
+        },
+      });
+      // Close modals
+      setShowTemplatesModal(false);
+      onClose();
+    }
+  };
+
   const handleClose = () => {
     onClose();
     resetForm();
@@ -323,8 +402,23 @@ export default function ShoppingListModal({
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {(mode === "create" || mode === "edit") && (
             <>
-              {/* List Details */}
-              <View style={styles.section}>
+              {mode === "create" && (
+                <View style={styles.templatesSection}>
+                  <Text style={styles.sectionTitle}>Quick Start</Text>
+                  <Pressable
+                    style={styles.templatesButton}
+                    onPress={() => setShowTemplatesModal(true)}
+                  >
+                    <Ionicons
+                      name="document-text-outline"
+                      size={20}
+                      color="#4CAF50"
+                    />
+                    <Text style={styles.templatesButtonText}>Use Template</Text>
+                  </Pressable>
+                </View>
+              )}
+              <View style={styles.formActions}>
                 <Text style={styles.sectionTitle}>List Details</Text>
 
                 <View style={styles.inputGroup}>
@@ -442,6 +536,12 @@ export default function ShoppingListModal({
                     </Text>
                     <Text style={styles.listStat}>${listTotal.toFixed(2)}</Text>
                   </View>
+                  <Pressable
+                    style={styles.shareListButton}
+                    onPress={() => setShowShareModal(true)}
+                  >
+                    <Ionicons name="share-outline" size={16} color="#4CAF50" />
+                  </Pressable>
                 </View>
                 {list.description && (
                   <Text style={styles.listDescription}>{list.description}</Text>
@@ -699,16 +799,40 @@ export default function ShoppingListModal({
                       </Pressable>
 
                       <View style={styles.itemInfo}>
-                        <Text
-                          style={[
-                            styles.itemName,
-                            item.checked && styles.itemNameChecked,
-                          ]}
-                        >
-                          {item.name}
-                        </Text>
+                        <View style={styles.itemHeader}>
+                          <Text
+                            style={[
+                              styles.itemName,
+                              item.checked && styles.itemNameChecked,
+                            ]}
+                          >
+                            {item.name}
+                          </Text>
+                          <View style={styles.itemActions}>
+                            <Pressable
+                              style={styles.editButton}
+                              onPress={() => handleEditItem(item)}
+                            >
+                              <Ionicons
+                                name="create-outline"
+                                size={16}
+                                color="#4CAF50"
+                              />
+                            </Pressable>
+                            <Pressable
+                              style={styles.duplicateButton}
+                              onPress={() => handleDuplicateItem(item)}
+                            >
+                              <Ionicons
+                                name="copy-outline"
+                                size={16}
+                                color="#2196F3"
+                              />
+                            </Pressable>
+                          </View>
+                        </View>
                         <Text style={styles.itemDetails}>
-                          {item.quantity} {item.unit} • {item.category}
+                          {item.category} • {item.store}
                         </Text>
                         {item.notes && (
                           <Text style={styles.itemNotes}>{item.notes}</Text>
@@ -716,9 +840,43 @@ export default function ShoppingListModal({
                       </View>
 
                       <View style={styles.itemRight}>
-                        <Text style={styles.itemPrice}>
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </Text>
+                        <View style={styles.quantityControls}>
+                          <Pressable
+                            style={styles.quantityButton}
+                            onPress={() =>
+                              handleUpdateQuantity(item.id, item.quantity - 1)
+                            }
+                          >
+                            <Ionicons
+                              name="remove-outline"
+                              size={16}
+                              color="#666"
+                            />
+                          </Pressable>
+                          <Text style={styles.quantityText}>
+                            {item.quantity}
+                          </Text>
+                          <Pressable
+                            style={styles.quantityButton}
+                            onPress={() =>
+                              handleUpdateQuantity(item.id, item.quantity + 1)
+                            }
+                          >
+                            <Ionicons
+                              name="add-outline"
+                              size={16}
+                              color="#4CAF50"
+                            />
+                          </Pressable>
+                        </View>
+                        <View style={styles.priceSection}>
+                          <Text style={styles.itemPrice}>
+                            ${(item.price * item.quantity).toFixed(2)}
+                          </Text>
+                          <Text style={styles.unitPrice}>
+                            ${item.price.toFixed(2)}/{item.unit}
+                          </Text>
+                        </View>
                         <Pressable
                           style={styles.deleteButton}
                           onPress={() => handleDeleteItem(item.id)}
@@ -778,6 +936,22 @@ export default function ShoppingListModal({
         filters={filters}
         onFiltersChange={handleFiltersChange}
         onReset={handleResetFilters}
+      />
+
+      {/* Share Modal */}
+      {list && (
+        <ShareListModal
+          visible={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          list={list}
+        />
+      )}
+
+      {/* Templates Modal */}
+      <ListTemplatesModal
+        visible={showTemplatesModal}
+        onClose={() => setShowTemplatesModal(false)}
+        onSelectTemplate={handleSelectTemplate}
       />
     </Modal>
   );
@@ -905,7 +1079,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 15,
+  },
+  shareListButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: "#F5F5F5",
   },
   listName: {
     fontSize: 18,
@@ -1195,5 +1374,78 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
     fontWeight: "600",
+  },
+  itemHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 8,
+  },
+  itemActions: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  editButton: {
+    padding: 6,
+    borderRadius: 4,
+    backgroundColor: "#F5F5F5",
+  },
+  duplicateButton: {
+    padding: 6,
+    borderRadius: 4,
+    backgroundColor: "#F5F5F5",
+  },
+  quantityControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginBottom: 8,
+  },
+  quantityButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1A1A1A",
+    marginHorizontal: 12,
+    minWidth: 30,
+    textAlign: "center",
+  },
+  priceSection: {
+    alignItems: "flex-end",
+  },
+  unitPrice: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 2,
+  },
+  templatesSection: {
+    marginBottom: 20,
+  },
+  templatesButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 15,
+    backgroundColor: "#E8F5E8",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#4CAF50",
+  },
+  templatesButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#4CAF50",
+    marginLeft: 8,
   },
 });
